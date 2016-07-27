@@ -11,9 +11,35 @@
 //    | [+-] [0-9]
 //    | [+-] [a-z]
 
-var buffer  = "+a + -b * c / +d + -5 * +7 + (a * -3 * 7 + 2)".split(''),
-    current = 0,
+// var buffer  = "+a + -b * c / +d + -5 * +7 + (a * -3 * 7 + 2)".split(''),
+//     current = 0,
+//     token   = buffer[current];
+
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false,
+});
+
+var buffer, current, token;
+rl.on('line', function(line){
+    buffer  = line.split('');
+    current = 0;
     token   = buffer[current];
+    
+    processExpression();
+});
+
+function processExpression() {
+    try {
+        E();
+        console.log("Expression '" + buffer.join('') + "' was a valid arithmetic expression");
+    }
+    catch (e) {
+        console.log("Expression '" + buffer.join('') + "' was NOT a valid arithmetic expression: " + e);
+    }
+}
 
 function expect(t) {
     if ( token == t ) {
@@ -56,14 +82,14 @@ function F() {
             consume();
         }
         else {
-            throw "Expected 0-9 or a-z after unary '+'/'-' but saw '" + token + "' at column " + current;
+            throw "Expected [0-9] or [a-z] after unary '+'/'-' but saw '" + token + "' at column " + current;
         }
     }
     else if ( isDigit(token) || isLetter(token) ) {
         consume();
     }
     else {
-        throw "Expected 0-9, 'a'-'z' or '(' but saw '" + token + "' at column " + current;
+        throw "Expected [0-9], [a-z] or '(' but saw '" + token + "' at column " + current;
     }
 }
 
@@ -73,13 +99,4 @@ function isDigit(t) {
 
 function isLetter(t) {
     return t >= 'a' && t <= 'z';
-}
-
-try {
-    E();
-    console.log("Expression " + buffer.join('') + " was a valid arithmetic expression");
-}
-catch (e) {
-    console.log(e);
-    console.log("Expression " + buffer.join('') + " was NOT a valid arithmetic expression");
 }
